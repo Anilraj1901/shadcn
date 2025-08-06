@@ -6,6 +6,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
+      position='top-right'         // ✅ Toast position
+      closeButton={true}           // ✅ Show close icon
+      richColors={true}            // ✅ Green for success, red for error, etc.
       theme={theme as ToasterProps['theme']}
       className='toaster group [&_div[data-content]]:w-full'
       style={

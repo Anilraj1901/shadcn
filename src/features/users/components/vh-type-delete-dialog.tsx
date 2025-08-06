@@ -2,11 +2,12 @@
 
 // import { useState } from 'react'
 import { IconAlertTriangle } from '@tabler/icons-react'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { toast } from 'sonner'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 // import { Input } from '@/components/ui/input'
 // import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import MasterServices from "@/services/master";
 
 interface Props {
   open: boolean
@@ -17,11 +18,21 @@ interface Props {
 export function VhTypeDeleteDialog({ open, onOpenChange, currentRow }: Props) {
   // const [value, setValue] = useState('')
 
-  const handleDelete = () => {
-    // if (value.trim() !== currentRow.name) return
+  const handleDelete = async () => {
+    const formData = new FormData()
+
+    formData.append('contName', currentRow.contName)
+    formData.append('varient', currentRow.varient)
+    formData.append('userAakno', '1')
+    formData.append('opt', '3')
+    formData.append('contAakno', currentRow.contAakno.toString())
+
+    await MasterServices.vehicleTypeSave(formData)
+
+    toast.success('Vehicle type deleted successfully')
 
     onOpenChange(false)
-    showSubmittedData(currentRow, 'The following user has been deleted:')
+
   }
 
   return (
@@ -41,26 +52,6 @@ export function VhTypeDeleteDialog({ open, onOpenChange, currentRow }: Props) {
       }
       desc={
         <div className='space-y-4'>
-          {/* <p className='mb-2'>
-            Are you sure you want to delete{' '}
-            <span className='font-bold'>{currentRow.name}</span>?
-            <br />
-            This action will permanently remove the user with the role of{' '}
-            <span className='font-bold'>
-              {currentRow.role.toUpperCase()}
-            </span>{' '}
-            from the system. This cannot be undone.
-          </p>
-
-          <Label className='my-2'>
-            name:
-            <Input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder='Enter name to confirm deletion.'
-            />
-          </Label> */}
-
           <Alert variant='destructive'>
             <AlertTitle>Warning!</AlertTitle>
             <AlertDescription>

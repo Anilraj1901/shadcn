@@ -3,8 +3,9 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/utils/show-submitted-data'
 import { Button } from '@/components/ui/button'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -23,30 +24,24 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
+import MasterServices from "@/services/master";
 
-const formSchema = z.object({
-  contName: z.string().min(1, 'Name is required.'),
-  varient: z.string().min(1, 'Varient is required.'),
-  CStatus: z.string().min(1, 'Status is required.').transform((val) => val.trim()),
-})
-
-type FormType = z.infer<typeof formSchema>
 
 interface Props {
-  currentRow?: {
-    contName: string
-    varient: string
-    CStatus: string
-  }
+  currentRow?: any
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
 export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow;
-
-  const form = useForm<FormType>({
-    resolver: zodResolver(formSchema),
+  const queryClient = useQueryClient(); // ✅ <--- This fixes the error
+  const form = useForm<any>({
+    resolver: zodResolver(z.object({
+      contName: z.string().min(1, 'Name is required.'),
+      varient: z.string().min(1, 'Varient is required.'),
+      CStatus: z.string().min(1, 'Status is required.').transform((val) => val.trim())
+    })),
     defaultValues: isEdit
       ? {
         contName: currentRow?.contName || '',
@@ -56,15 +51,34 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
       : {
         contName: '',
         varient: '',
-        CStatus: '',
+        CStatus: ''
       },
   })
 
-  const onSubmit = (values: FormType) => {
-    form.reset()
-    showSubmittedData(values)
-    onOpenChange(false)
-  }
+  const onSubmit = async (values: any) => {
+    try {
+      const formData = new FormData();
+      formData.append('contName', values.contName);
+      formData.append('varient', values.varient);
+      formData.append('userAakno', '1');
+      formData.append('opt', isEdit ? '2' : '1');
+
+      const contAakno = currentRow?.contAakno && Number(currentRow.contAakno);
+      formData.append('contAakno', contAakno ? contAakno.toString() : '0');
+
+      await MasterServices.vehicleTypeSave(formData);
+
+      toast.success(isEdit ? 'Vehicle type updated successfully' : 'Vehicle type created successfully');
+
+      queryClient.invalidateQueries({ queryKey: ['vehicleTypeList'] });
+
+      onOpenChange(false);
+      form.reset();
+    } catch (error) {
+      console.error('Failed to save vehicle type:', error);
+      toast.error('Failed to save vehicle type');
+    }
+  };
 
   return (
     <Dialog
