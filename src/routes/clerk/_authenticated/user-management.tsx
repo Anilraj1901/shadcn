@@ -14,12 +14,13 @@ import { Main } from '@/components/layout/main'
 import { LearnMore } from '@/components/learn-more'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-// import { columns } from '@/features/users/components/users-columns'
-import { VhTypePrimaryButtons } from '@/features/users/components/vh-type-primary-buttons'
-// import { UsersTable } from '@/features/users/components/vh-type-table'
-import VhTypesProvider from '@/features/users/context/vh-types-context'
-// import { userListSchema } from '@/features/users/data/schema'
-// import { users } from '@/features/users/data/users'
+import { columns } from '@/features/users/components/users-columns'
+import { UsersDialogs } from '@/features/users/components/users-dialogs'
+import { UsersPrimaryButtons } from '@/features/users/components/users-primary-buttons'
+import { UsersTable } from '@/features/users/components/users-table'
+import UsersProvider from '@/features/users/context/users-context'
+import { userListSchema } from '@/features/users/data/schema'
+import { users } from '@/features/users/data/users'
 
 export const Route = createFileRoute('/clerk/_authenticated/user-management')({
   component: UserManagement,
@@ -42,11 +43,11 @@ function UserManagement() {
   }
 
   // Parse user list
-  // const userList = userListSchema.parse(users)
+  const userList = userListSchema.parse(users)
   return (
     <>
       <SignedIn>
-        <VhTypesProvider>
+        <UsersProvider>
           <Header fixed>
             <Search />
             <div className='ml-auto flex items-center space-x-4'>
@@ -86,14 +87,15 @@ function UserManagement() {
                   </LearnMore>
                 </div>
               </div>
-              <VhTypePrimaryButtons />
+              <UsersPrimaryButtons />
             </div>
             <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-              {/* <UsersTable data={userList} columns={columns} /> */}
+              <UsersTable data={userList} columns={columns} />
             </div>
           </Main>
 
-        </VhTypesProvider>
+          <UsersDialogs />
+        </UsersProvider>
       </SignedIn>
     </>
   )

@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import LongText from '@/components/long-text'
-import { DataTableColumnHeader } from '../../../components/table/data-table-column-header';
+import { DataTableColumnHeader } from '../../../../components/table/data-table-column-header';
 import { DataTableRowActions } from './data-table-row-actions';
 import moment from 'moment';
 

@@ -17,7 +17,10 @@ import {
   IconTool,
   IconUserCog,
   IconUserOff,
+  IconTruck,
   IconUsers,
+  IconShieldCog,
+  IconBuildingFactory
 } from '@tabler/icons-react'
 import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react'
 import { ClerkLogo } from '@/assets/clerk-logo'
@@ -92,6 +95,22 @@ export const sidebarData: SidebarData = {
               title: 'User Management',
               url: '/clerk/user-management',
             },
+          ],
+        },
+        {
+          title: 'Masters',
+          icon: IconShieldCog,
+          items: [
+            {
+              title: 'Vehicle Type',
+               icon: IconTruck,
+              url: '/masters/vehicleTypes',
+            },
+            {
+              title: 'Vehicle Brand',
+              icon: IconBuildingFactory,
+              url: '/clerk/sign-up',
+            }
           ],
         },
       ],

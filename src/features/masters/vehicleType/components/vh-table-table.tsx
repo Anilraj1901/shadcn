@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { DataTablePagination } from '../../../components/table/data-table-pagination'
+import { DataTablePagination } from '../../../../components/table/data-table-pagination'
 import { DataTableToolbar } from './data-table-filters'
 
 declare module '@tanstack/react-table' {

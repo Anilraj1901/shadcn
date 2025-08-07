@@ -1,5 +1,4 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { Row } from '@tanstack/react-table'
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,15 +9,14 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useUsers } from '../context/users-context'
-import { User } from '../data/schema'
+import { useVhTypes } from '../context/vh-types-context'
 
 interface DataTableRowActionsProps {
-  row: Row<User>
+  row: any
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
-  const { setOpen, setCurrentRow } = useUsers()
+  const { setOpen, setCurrentRow } = useVhTypes()
   return (
     <>
       <DropdownMenu modal={false}>
