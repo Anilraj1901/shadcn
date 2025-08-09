@@ -103,7 +103,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
                 <FormItem className='space-y-1'>
                   <FormLabel>Status</FormLabel>
                   <SelectDropdown
-                    defaultValue={field.value}
+                    value={field.value}
                     onValueChange={field.onChange}
                     placeholder='Select dropdown'
                     items={[
