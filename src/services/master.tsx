@@ -1,12 +1,12 @@
 import axiosInstance from "../axios";
 
 class MasterService {
-  vehicleTypeList = async () => {
-    return await axiosInstance.get("/SpringJOAS/container/ContainerPrint?contAakno=0");
+  vehicleTypeList = async (queryParams?: any) => {
+    return await axiosInstance.get(`/container/ContainerPrint?contAakno=0&${queryParams}`);
   };
 
   vehicleTypeSave = async (data: any) => {
-    return await axiosInstance.post("/SpringJOAS/container/save", data);
+    return await axiosInstance.post("/container/save", data);
   }
 }
 

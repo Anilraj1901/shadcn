@@ -9,7 +9,6 @@ import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -35,7 +34,7 @@ interface Props {
 
 export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow;
-  const queryClient = useQueryClient(); // ✅ <--- This fixes the error
+  const queryClient = useQueryClient();
   const form = useForm<any>({
     resolver: zodResolver(z.object({
       contName: z.string().min(1, 'Name is required.'),
@@ -60,6 +59,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
       const formData = new FormData();
       formData.append('contName', values.contName);
       formData.append('varient', values.varient);
+      formData.append('CStatus', values.CStatus);
       formData.append('userAakno', '1');
       formData.append('opt', isEdit ? '2' : '1');
 
@@ -91,17 +91,46 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader className='text-left'>
           <DialogTitle>{isEdit ? 'Edit Vehicle Type' : 'Add New Vehicle Type'}</DialogTitle>
-          <DialogDescription>
-            {isEdit ? 'Update the vehicle type here. ' : 'Create new vehicle type here. '}
-            Click save when you&apos;re done.
-          </DialogDescription>
         </DialogHeader>
         <div className='-mr-4 max-h-[80vh] w-full overflow-y-auto py-1 pr-4'>
           <Form {...form}>
             <form
-              id='vh-type-form'
+              id="vh-type-form"
               onSubmit={form.handleSubmit(onSubmit)}
-              className='space-y-4 p-0.5'
+              className="space-y-4 p-0.5"
+              onKeyDown={(e) => {
+                const form = e.currentTarget;
+                const focusable = Array.from(
+                  form.querySelectorAll<HTMLElement>("input, select, textarea, button")
+                ).filter((el) => !(el as HTMLInputElement).disabled && (el as HTMLInputElement).type !== "hidden");
+
+                const index = focusable.indexOf(e.target as HTMLElement);
+
+                if (e.key === "Enter") {
+                  if (focusable[index]?.tagName === "BUTTON") {
+                    return;
+                  }
+
+                  e.preventDefault();
+                  if (index > -1 && index < focusable.length - 1) {
+                    focusable[index + 1].focus();
+                  }
+                }
+
+                if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  if (index > -1 && index < focusable.length - 1) {
+                    focusable[index + 1].focus();
+                  }
+                }
+
+                if (e.key === "ArrowUp") {
+                  e.preventDefault();
+                  if (index > 0) {
+                    focusable[index - 1].focus();
+                  }
+                }
+              }}
             >
               <FormField
                 control={form.control}
@@ -166,7 +195,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
         </div>
         <DialogFooter>
           <Button type='submit' form='vh-type-form'>
-            Save changes
+            {isEdit ? 'Update' : 'Create'}
           </Button>
         </DialogFooter>
       </DialogContent>

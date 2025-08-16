@@ -20,9 +20,7 @@ export function VhTypesDialogs() {
             open={open === 'edit'}
             onOpenChange={() => {
               setOpen('edit')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+              setCurrentRow(null)
             }}
             currentRow={currentRow}
           />
@@ -32,9 +30,7 @@ export function VhTypesDialogs() {
             open={open === 'delete'}
             onOpenChange={() => {
               setOpen('delete')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+              setCurrentRow(null)
             }}
             currentRow={currentRow}
           />
