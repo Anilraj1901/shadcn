@@ -2,7 +2,7 @@ import axiosInstance from "../axios";
 
 class MasterService {
   vehicleTypeList = async (queryParams?: any) => {
-    return await axiosInstance.get(`/container/ContainerPrint?contAakno=0&${queryParams}`);
+    return await axiosInstance.get(`/container/popup?${queryParams}`);
   };
 
   vehicleTypeSave = async (data: any) => {

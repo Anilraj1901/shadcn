@@ -34,6 +34,9 @@ import {
 } from '@/components/ui/table'
 import { DataTablePagination } from '../../../components/table/data-table-pagination';
 import { DataTableToolbar } from './components/data-table-filters';
+import { Loader2 } from "lucide-react"
+
+
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -41,17 +44,22 @@ declare module '@tanstack/react-table' {
   }
 }
 
-export default function vhTypes() {
 
+export default function VhTypes() {
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
-  const vehicleTypeList: any = useQuery<any>({
-    queryKey: ["vehicleTypeList", page, limit],
+  const [filter, setFilter] = useState("");
+  // install with: npm i use-debounce
+
+
+  const vehicleTypeList = useQuery({
+    queryKey: ["vehicleTypeList", page, limit, filter],
     queryFn: async () => {
-      let queryParams = `limit=${limit}&page=${page}`;
-      let res = await MasterServices.vehicleTypeList(queryParams);
-      res.data.totalCount = res?.data?.container.length;
-      return res.data;
+      let queryParams = `sEcho=5&iColumns=2&sColumns=%2C&mDataProp_0=contAakno&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=contName&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=asc&iSortingCols=1&_=1755523196428&iDisplayLength=${limit}&iDisplayStart=${page * limit}`;
+
+      if (filter) queryParams += `&filter=${filter}`;
+
+      return await MasterServices.vehicleTypeList(queryParams);
     },
   });
 
@@ -59,33 +67,38 @@ export default function vhTypes() {
     <VhTypesProvider>
       <Header fixed>
         <Search />
-        <div className='ml-auto flex items-center space-x-4'>
+        <div className="ml-auto flex items-center space-x-4">
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
       </Header>
 
       <Main>
-        <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Vehicle Types</h2>
-          </div>
+        {/* Header Row */}
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-2xl font-bold tracking-tight">Vehicle Types</h2>
           <VhTypePrimaryButtons />
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          {vehicleTypeList.isLoading ? (
-            <p>Loading...</p>
-          ) : vehicleTypeList.isError ? (
-            <p>Error loading vehicle types</p>
-          ) : (
-            <VhTypesTable
-              data={vehicleTypeList?.data || []}
-              columns={columns}
-              setLimit={setLimit}
-              setPage={setPage}   // <-- Pass down
-              page={page}         // <-- Pass current page
-            />
-          )}
+
+        {/* Toolbar Row */}
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <DataTableToolbar filter={filter} setFilter={setFilter} setPage={setPage} />
+        </div>
+
+        {/* Table Section */}
+        <div className="flex-1 overflow-auto px-4 py-2">
+          <VhTypesTable
+            data={vehicleTypeList?.data?.data?.aaData || []}
+            totalRecords={Number(vehicleTypeList?.data?.data?.iTotalRecords) || 0}
+            columns={columns}
+            setLimit={setLimit}
+            setPage={setPage}
+            page={page}
+            limit={limit}
+            setFilter={setFilter}
+            filter={filter}
+            isLoading={vehicleTypeList.isLoading}
+          />
         </div>
       </Main>
       <VhTypesDialogs />
@@ -94,14 +107,12 @@ export default function vhTypes() {
 }
 
 
-export function VhTypesTable({ columns, data, setLimit, setPage, page }: any) {
+
+export function VhTypesTable({ columns, data, totalRecords, setLimit, setPage, page, limit, isLoading }: any) {
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
-  const [globalFilter, setGlobalFilter] = useState('');
-  let totalCount = data?.totalCount || 10;
-  data = data?.container || [];
 
   const table = useReactTable({
     data,
@@ -111,15 +122,14 @@ export function VhTypesTable({ columns, data, setLimit, setPage, page }: any) {
       columnVisibility,
       rowSelection,
       columnFilters,
-      globalFilter,
-      pagination: { pageIndex: page, pageSize: 10 },
+      pagination: { pageIndex: page, pageSize: limit },
     },
-    onPaginationChange: () => { },
+    manualPagination: true,
+    pageCount: Math.ceil(totalRecords / limit),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -130,59 +140,47 @@ export function VhTypesTable({ columns, data, setLimit, setPage, page }: any) {
   })
 
   return (
-    <div className='space-y-4'>
-      <DataTableToolbar table={table} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
-      <div className='overflow-hidden rounded-md border'>
+    <div className="space-y-4 relative">
+      <div className="overflow-hidden rounded-md border relative">
+
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className='group/row'>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className={header.column.columnDef.meta?.className ?? ''}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  )
-                })}
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-32 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    {/* Animated spinning loader */}
+                    <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                    <span className="text-sm text-gray-500">Loading vehicle types...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : data?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className='group/row'
-                >
+                <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cell.column.columnDef.meta?.className ?? ''}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -190,9 +188,10 @@ export function VhTypesTable({ columns, data, setLimit, setPage, page }: any) {
           </TableBody>
         </Table>
       </div>
+
       <DataTablePagination
         table={table}
-        totalCount={totalCount}
+        totalCount={totalRecords}
         setLimit={setLimit}
         setPage={setPage}
         page={page}

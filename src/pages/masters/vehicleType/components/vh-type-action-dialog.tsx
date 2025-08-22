@@ -24,7 +24,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import MasterServices from "@/services/master";
-
+import { useFormNavigation } from "@/hooks/useFormNavigation"
 
 interface Props {
   currentRow?: any
@@ -35,6 +35,8 @@ interface Props {
 export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow;
   const queryClient = useQueryClient();
+  const handleKeyDown = useFormNavigation();
+
   const form = useForm<any>({
     resolver: zodResolver(z.object({
       contName: z.string().min(1, 'Name is required.'),
@@ -98,39 +100,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
               id="vh-type-form"
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4 p-0.5"
-              onKeyDown={(e) => {
-                const form = e.currentTarget;
-                const focusable = Array.from(
-                  form.querySelectorAll<HTMLElement>("input, select, textarea, button")
-                ).filter((el) => !(el as HTMLInputElement).disabled && (el as HTMLInputElement).type !== "hidden");
-
-                const index = focusable.indexOf(e.target as HTMLElement);
-
-                if (e.key === "Enter") {
-                  if (focusable[index]?.tagName === "BUTTON") {
-                    return;
-                  }
-
-                  e.preventDefault();
-                  if (index > -1 && index < focusable.length - 1) {
-                    focusable[index + 1].focus();
-                  }
-                }
-
-                if (e.key === "ArrowDown") {
-                  e.preventDefault();
-                  if (index > -1 && index < focusable.length - 1) {
-                    focusable[index + 1].focus();
-                  }
-                }
-
-                if (e.key === "ArrowUp") {
-                  e.preventDefault();
-                  if (index > 0) {
-                    focusable[index - 1].focus();
-                  }
-                }
-              }}
+              onKeyDown={handleKeyDown}
             >
               <FormField
                 control={form.control}
