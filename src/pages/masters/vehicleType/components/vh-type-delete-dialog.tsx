@@ -22,7 +22,6 @@ export function VhTypeDeleteDialog({ open, onOpenChange, currentRow }: Props) {
     const formData = new FormData()
 
     formData.append('contName', currentRow.contName)
-    formData.append('varient', currentRow.varient)
     formData.append('userAakno', '1')
     formData.append('opt', '3')
     formData.append('contAakno', currentRow.contAakno.toString())

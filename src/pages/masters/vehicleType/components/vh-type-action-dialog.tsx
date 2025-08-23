@@ -40,18 +40,15 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
   const form = useForm<any>({
     resolver: zodResolver(z.object({
       contName: z.string().min(1, 'Name is required.'),
-      varient: z.string().min(1, 'Varient is required.'),
       CStatus: z.string().min(1, 'Status is required.').transform((val) => val.trim())
     })),
     defaultValues: isEdit
       ? {
         contName: currentRow?.contName || '',
-        varient: currentRow?.varient || '',
         CStatus: currentRow?.CStatus?.toString() ?? '',
       }
       : {
         contName: '',
-        varient: '',
         CStatus: ''
       },
   })
@@ -60,7 +57,6 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
     try {
       const formData = new FormData();
       formData.append('contName', values.contName);
-      formData.append('varient', values.varient);
       formData.append('CStatus', values.CStatus);
       formData.append('userAakno', '1');
       formData.append('opt', isEdit ? '2' : '1');
@@ -84,91 +80,77 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
 
   return (
     <Dialog
-      open={open}
-      onOpenChange={(state) => {
-        form.reset()
-        onOpenChange(state)
-      }}
-    >
-      <DialogContent className='sm:max-w-lg'>
-        <DialogHeader className='text-left'>
-          <DialogTitle>{isEdit ? 'Edit Vehicle Type' : 'Add New Vehicle Type'}</DialogTitle>
-        </DialogHeader>
-        <div className='-mr-4 max-h-[80vh] w-full overflow-y-auto py-1 pr-4'>
-          <Form {...form}>
-            <form
-              id="vh-type-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4 p-0.5"
-              onKeyDown={handleKeyDown}
-            >
-              <FormField
-                control={form.control}
-                name='contName'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>Name</FormLabel>
-                    <FormControl className='col-span-4'>
-                      <Input
-                        placeholder='Enter Name'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
+  open={open}
+  onOpenChange={(state) => {
+    form.reset()
+    onOpenChange(state)
+  }}
+>
+  <DialogContent className='sm:max-w-lg'>
+    <DialogHeader className='text-left'>
+      <DialogTitle>
+        {isEdit ? 'Edit Vehicle Type' : 'Add New Vehicle Type'}
+      </DialogTitle>
+    </DialogHeader>
+    <div className='-mr-4 max-h-[80vh] w-full overflow-y-auto py-1 pr-4'>
+      <Form {...form}>
+        <form
+          id="vh-type-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 p-0.5"
+          onKeyDown={handleKeyDown}
+        >
+          <FormField
+            control={form.control}
+            name='contName'
+            render={({ field }) => (
+              <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
+                <FormLabel className='col-span-2 text-right'>Name</FormLabel>
+                <FormControl className='col-span-4'>
+                  <Input
+                    placeholder='Enter Name'
+                    autoComplete='off'
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className='col-span-4 col-start-3' />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name='varient'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>Varient</FormLabel>
-                    <FormControl className='col-span-4'>
-                      <Input
-                        placeholder='Enter Varient'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name='CStatus'
+            render={({ field }) => (
+              <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
+                <FormLabel className='col-span-2 text-right'>Status</FormLabel>
+                <FormControl className='col-span-4'>
+                  <SelectDropdown
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder='Select Status'
+                    className='w-full'
+                    items={[
+                      { label: 'Active', value: '0' },
+                      { label: 'In-Active', value: '1' },
+                    ]}
+                  />
+                </FormControl>
+                <FormMessage className='col-span-4 col-start-3' />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name='CStatus'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>Status</FormLabel>
-                    <FormControl className='col-span-4'>
-                      <SelectDropdown
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder='Select Status'
-                        className='w-full'
-                        items={[
-                          { label: 'Active', value: '0' },
-                          { label: 'In-Active', value: '1' },
-                        ]}
-                      />
-                    </FormControl>
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </div>
-        <DialogFooter>
-          <Button type='submit' form='vh-type-form'>
-            {isEdit ? 'Update' : 'Create'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter className="pt-4">
+            <Button type='submit'>
+              {isEdit ? 'Update' : 'Create'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </Form>
+    </div>
+  </DialogContent>
+</Dialog>
+
   )
 }

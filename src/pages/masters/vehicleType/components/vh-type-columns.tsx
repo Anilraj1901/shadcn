@@ -32,14 +32,6 @@ export const columns: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: 'varient',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Varient' />
-    ),
-    cell: ({ row }) => <div>{row.getValue('varient')}</div>,
-    enableSorting: false,
-  },
-  {
     accessorKey: 'CStatus',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Status' />
