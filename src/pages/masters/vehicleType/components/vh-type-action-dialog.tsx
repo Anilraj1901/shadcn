@@ -6,12 +6,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useRef } from "react"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription
 } from '@/components/ui/dialog'
 import {
   Form,
@@ -25,7 +27,7 @@ import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import MasterServices from "@/services/master";
 import { useFormNavigation } from "@/hooks/useFormNavigation"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { VhSearchLsTableView } from "@/pages/masters/vehicleType/components/vh-search-ls-table"
 
 interface Props {
@@ -39,24 +41,40 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
   const queryClient = useQueryClient();
   const handleKeyDown = useFormNavigation()
   const [searchList, setSearchList] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState<any>(currentRow);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const statusSelectRef = useRef<HTMLInputElement | null>(null);
 
   const form = useForm<any>({
     resolver: zodResolver(z.object({
       contName: z.string().min(1, 'Name is required.'),
       cstatus: z.string().min(1, 'Status is required.').transform((val) => val.trim())
     })),
-    defaultValues: currentRow
-      ? {
-        contName: currentRow?.contName || '',
-        cstatus: currentRow?.cstatus?.toString() ?? '',
-        contAakno: currentRow?.contAakno?.toString() ?? ''
-      }
-      : {
-        contName: '',
-        cstatus: ''
-      },
+    defaultValues: {
+      contName: '',
+      cstatus: '',
+      contAakno: ''
+    },
   })
-  form.setValue('contAakno', currentRow && currentRow?.contAakno?.toString() || '')
+
+  useEffect(() => {
+    if (currentRowData) {
+      form.reset({
+        contName: currentRowData?.contName || '',
+        cstatus: currentRowData?.cstatus?.toString() ?? '',
+        contAakno: currentRowData?.contAakno?.toString() ?? '',
+      })
+    } else {
+      form.reset({
+        contName: '',
+        cstatus: '',
+        contAakno: '',
+      })
+    }
+  }, [currentRowData, form]);
+
+
+  form.setValue('contAakno', currentRowData && currentRowData?.contAakno?.toString() || '')
 
   const onSubmit = async (values: any) => {
     try {
@@ -87,25 +105,30 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
       <Dialog
         open={open}
         onOpenChange={(state) => {
-          form.reset()
-          onOpenChange(state)
+          if (!state) {
+            form.reset();
+            setCurrentRowData(null);
+          }
+          onOpenChange(state);
         }}
       >
         <DialogContent
           onEscapeKeyDown={(e) => {
-            e.preventDefault() // stop dialog from closing
-            form.reset({
-              contName: '',
-              cstatus: '',
-              contAakno: '',
-            })
+            e.preventDefault();
+            form.reset({ contName: '', cstatus: '', contAakno: '' });
+            setCurrentRowData(null);
+            setTimeout(() => {
+              nameInputRef.current?.focus()
+            }, 0)
           }}
           className="sm:max-w-lg"
         >
+
           <DialogHeader className='text-left'>
             <DialogTitle>
               {isEdit ? 'Edit Vehicle Type' : 'Add New Vehicle Type'}
             </DialogTitle>
+            <DialogDescription></DialogDescription>
           </DialogHeader>
 
           <div className='-mr-4 max-h-[80vh] w-full overflow-y-auto py-1 pr-4'>
@@ -130,10 +153,11 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
                           onKeyDown={(e: any) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
-                              isEdit && setSearchList(true);
+                              !form.getValues('contAakno') && setSearchList(true);
                             }
                           }}
                           {...field}
+                          ref={nameInputRef}
                         />
                       </FormControl>
                       <FormMessage className='col-span-4 col-start-3' />
@@ -158,6 +182,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
                             { label: 'Active', value: '0' },
                             { label: 'In-Active', value: '1' },
                           ]}
+                          ref={statusSelectRef}
                         />
                       </FormControl>
                       <FormMessage className='col-span-4 col-start-3' />
@@ -182,10 +207,11 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
         onOpenChange={setSearchList}
         searchValue={form.getValues('contName')}
         onSelect={(rowData: any) => {
-          form.setValue('contName', rowData.contName ?? '')
-          form.setValue('contAakno', rowData.contAakno?.toString() ?? '')
-          form.setValue('cstatus', rowData.cstatus?.toString() ?? '')
           setSearchList(false);
+          setCurrentRowData(rowData);
+          setTimeout(() => {
+            statusSelectRef.current?.focus()
+          }, 0)
         }}
       />
     </>

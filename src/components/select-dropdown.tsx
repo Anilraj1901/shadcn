@@ -16,6 +16,7 @@ interface SelectDropdownProps {
   items: { label: string; value: string }[]
   className?: string
   disabled?: boolean
+  ref?: any
 }
 
 export function SelectDropdown({
@@ -25,6 +26,7 @@ export function SelectDropdown({
   items,
   className,
   disabled,
+  ref
 }: SelectDropdownProps) {
   const [open, setOpen] = useState(false);
   return (
@@ -38,6 +40,7 @@ export function SelectDropdown({
       onOpenChange={setOpen}
     >
       <SelectTrigger
+        ref={ref}
         className={cn("w-full", className)}
         disabled={disabled}
         onKeyDown={(e) => {

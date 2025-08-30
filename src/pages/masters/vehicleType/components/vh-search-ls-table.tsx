@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -101,9 +102,11 @@ export function VhSearchLsTableView({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="max-w-[90vw] w-full"
+        tabIndex={-1}
       >
         <DialogHeader>
           <DialogTitle>Vehicle Types</DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
 
         {/* Scrollable table with fixed headers */}
@@ -135,6 +138,7 @@ export function VhSearchLsTableView({
                       setSelectedIndex(idx)
                       onSelect(row)
                       onOpenChange(false)
+                      rowRefs.current[idx]?.blur()
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "ArrowDown") {
@@ -154,6 +158,7 @@ export function VhSearchLsTableView({
                         row.opt = 2
                         setSelectedIndex(idx)
                         onSelect(row)
+                        rowRefs.current[idx]?.blur()
                         onOpenChange(false)
                       }
                     }}
