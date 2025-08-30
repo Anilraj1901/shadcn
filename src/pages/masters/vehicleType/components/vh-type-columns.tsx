@@ -32,16 +32,16 @@ export const columns: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: 'CStatus',
+    accessorKey: 'cstatus',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Status' />
     ),
     cell: ({ row }) => {
-      const badgeColor = callTypes.get(row?.original?.CStatus)
+      const badgeColor = callTypes.get(row?.original?.cstatus)
       return (
         <div className='flex space-x-2'>
           <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('CStatus') == '0' ? 'Active' : 'In-Active'}
+            {row.getValue('cstatus') == '0' ? 'Active' : 'In-Active'}
           </Badge>
         </div>
       )
@@ -50,13 +50,13 @@ export const columns: ColumnDef<any>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: 'CreatedDate',
+    accessorKey: 'createdDate',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Created Date' />
+      <DataTableColumnHeader column={column} title='Created Date & Time' />
     ),
     cell: ({ row }) => {
       return (
-        <div className='flex space-x-2'>{row.getValue('CreatedDate') ? moment(row.getValue('CreatedDate'), 'DD-MM-YYYY hh:mm:ss').format('DD-MM-YYYY hh:mm A') : ''}</div>
+        <div className='flex space-x-2'>{row.getValue('createdDate') ? moment(row.getValue('createdDate'), 'DD-MM-YYYY hh:mm:ss').format('DD-MM-YYYY hh:mm A') : ''}</div>
       )
     },
     enableHiding: false,

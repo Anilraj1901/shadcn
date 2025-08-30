@@ -32,9 +32,9 @@ export function DataTableToolbar({
         />
 
         <div className='flex gap-x-2'>
-          {/* {table.getColumn('CStatus') && (
+          {/* {table.getColumn('cstatus') && (
             <DataTableFacetedFilter
-              column={table.getColumn('CStatus')}
+              column={table.getColumn('cstatus')}
               title='Status'
               options={[
                 { label: 'Active', value: '0' },

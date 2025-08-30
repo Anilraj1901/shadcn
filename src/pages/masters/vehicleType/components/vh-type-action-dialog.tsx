@@ -43,16 +43,16 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
   const form = useForm<any>({
     resolver: zodResolver(z.object({
       contName: z.string().min(1, 'Name is required.'),
-      CStatus: z.string().min(1, 'Status is required.').transform((val) => val.trim())
+      cstatus: z.string().min(1, 'Status is required.').transform((val) => val.trim())
     })),
     defaultValues: isEdit
       ? {
         contName: currentRow?.contName || '',
-        CStatus: currentRow?.CStatus?.toString() ?? '',
+        cstatus: currentRow?.cstatus?.toString() ?? '',
       }
       : {
         contName: '',
-        CStatus: ''
+        cstatus: ''
       },
   })
 
@@ -60,7 +60,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
     try {
       const formData = new FormData();
       formData.append('contName', values.contName);
-      formData.append('CStatus', values.CStatus);
+      formData.append('cstatus', values.cstatus);
       formData.append('userAakno', '1');
       formData.append('opt', isEdit ? '2' : '1');
 
@@ -127,7 +127,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
                 {/* Status dropdown */}
                 <FormField
                   control={form.control}
-                  name='CStatus'
+                  name='cstatus'
                   render={({ field }) => (
                     <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
                       <FormLabel className='col-span-2 text-right'>Status</FormLabel>
@@ -172,7 +172,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
         searchValue={form.getValues('contName')}
         onSelect={(rowData) => {
           form.setValue('contName', rowData.contName ?? '')
-          form.setValue('CStatus', rowData.CStatus?.toString() ?? '')
+          form.setValue('cstatus', rowData.cstatus?.toString() ?? '')
           setSearchList(false);
         }}
       />
