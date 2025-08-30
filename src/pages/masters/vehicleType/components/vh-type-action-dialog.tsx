@@ -26,7 +26,7 @@ import { SelectDropdown } from '@/components/select-dropdown'
 import MasterServices from "@/services/master";
 import { useFormNavigation } from "@/hooks/useFormNavigation"
 import { useState } from 'react'
-import { VhSearchLsTableView } from './vh-search-ls-table'
+import { VhSearchLsTableView } from "@/pages/masters/vehicleType/components/vh-search-ls-table"
 
 interface Props {
   currentRow?: any
@@ -116,6 +116,12 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
                         <Input
                           placeholder='Enter Name'
                           autoComplete='off'
+                          onKeyDown={(e: any) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              isEdit && setSearchList(true);
+                            }
+                          }}
                           {...field}
                         />
                       </FormControl>
@@ -150,12 +156,6 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
 
                 {/* Footer */}
                 <DialogFooter className="pt-4">
-                  {isEdit && <Button
-                    type='button'
-                    onClick={() => setSearchList(true)}
-                  >
-                    Search
-                  </Button>}
                   <Button type='submit'>
                     {isEdit ? 'Update' : 'Create'}
                   </Button>
@@ -170,7 +170,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
         open={searchList}
         onOpenChange={setSearchList}
         searchValue={form.getValues('contName')}
-        onSelect={(rowData) => {
+        onSelect={(rowData: any) => {
           form.setValue('contName', rowData.contName ?? '')
           form.setValue('cstatus', rowData.cstatus?.toString() ?? '')
           setSearchList(false);

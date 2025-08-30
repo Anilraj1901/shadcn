@@ -16,7 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import MasterServices from "../../../../services/master"
+import MasterServices from "../../../../services/master";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { cn } from "@/lib/utils"
 
 interface VhSearchLsTableViewProps {
   open: boolean
@@ -33,7 +42,10 @@ export function VhSearchLsTableView({
 }: VhSearchLsTableViewProps) {
   const [page, setPage] = React.useState(0)
   const [limit, setLimit] = React.useState(10)
-  
+  const [selectedIndex, setSelectedIndex] = React.useState<number>(-1)
+  const rowRefs = React.useRef<(HTMLTableRowElement | null)[]>([])
+
+
 
   const vehicleTypeList = useQuery({
     queryKey: ["vehicleTypeList", page, limit, searchValue],
@@ -75,52 +87,92 @@ export function VhSearchLsTableView({
     return pages
   }
 
+  React.useEffect(() => {
+    if (open && rows.length > 0) {
+      setSelectedIndex(0)
+      // small delay ensures DOM is ready
+      setTimeout(() => {
+        rowRefs.current[0]?.focus()
+      }, 0)
+    }
+  }, [open, rows])
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] w-full">
+      <DialogContent
+        className="max-w-[90vw] w-full"
+      >
         <DialogHeader>
           <DialogTitle>Vehicle Types</DialogTitle>
         </DialogHeader>
 
         {/* Scrollable table with fixed headers */}
         <div className="max-h-[500px] overflow-y-auto border rounded-md">
-          <table className="w-full border-separate border-spacing-0">
-            <thead>
-              <tr>
-                <th className="sticky top-0 bg-white z-10 text-left px-4 py-2 border-b w-1/3">
-                  Code
-                </th>
-                <th className="sticky top-0 bg-white z-10 text-left px-4 py-2 border-b w-2/3">
-                  Name
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="sticky top-0 z-10 bg-background">Code</TableHead>
+                <TableHead className="sticky top-0 z-10 bg-background">Name</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {rows.length > 0 ? (
                 rows.map((row: any, idx: number) => (
-                  <tr
+                  <TableRow
                     key={idx}
-                    className="even:bg-gray-50 cursor-pointer hover:bg-gray-100"
+                    tabIndex={0}
+                    ref={(el) => {
+                      rowRefs.current[idx] = el
+                    }}
+                    className={cn(
+                      "cursor-pointer border-b hover:bg-accent focus:bg-blue-25",
+                      selectedIndex === idx && "bg-accent",
+                      "odd:bg-background even:bg-muted"
+                    )}
+
                     onClick={() => {
-                      row.opt = 2; // Set opt to 3 for selection
-                      onSelect(row);
+                      row.opt = 2
+                      setSelectedIndex(idx)
+                      onSelect(row)
                       onOpenChange(false)
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowDown") {
+                        e.preventDefault()
+                        const next = (idx + 1) % rows.length
+                        setSelectedIndex(next)
+                        rowRefs.current[next]?.focus()
+                      }
+                      if (e.key === "ArrowUp") {
+                        e.preventDefault()
+                        const prev = (idx - 1 + rows.length) % rows.length
+                        setSelectedIndex(prev)
+                        rowRefs.current[prev]?.focus()
+                      }
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        row.opt = 2
+                        setSelectedIndex(idx)
+                        onSelect(row)
+                        onOpenChange(false)
+                      }
+                    }}
                   >
-                    <td className="px-4 py-2 border-b">{row.contAakno}</td>
-                    <td className="px-4 py-2 border-b">{row.contName}</td>
-                  </tr>
+                    <TableCell className="px-4 py-2">{row.contAakno}</TableCell>
+                    <TableCell className="px-4 py-2">{row.contName}</TableCell>
+                  </TableRow>
                 ))
               ) : (
-                <tr>
-                  <td colSpan={2} className="text-center py-4">
+                <TableRow>
+                  <TableCell colSpan={2} className="text-center py-4">
                     No records found
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
+
 
         {/* Pagination */}
         <div className="flex items-center justify-between mt-4">
