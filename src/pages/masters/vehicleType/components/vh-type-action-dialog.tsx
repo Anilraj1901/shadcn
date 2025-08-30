@@ -25,6 +25,8 @@ import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import MasterServices from "@/services/master";
 import { useFormNavigation } from "@/hooks/useFormNavigation"
+import { useState } from 'react'
+import { VehicleTypeDialog } from './vh-search-ls-table'
 
 interface Props {
   currentRow?: any
@@ -35,7 +37,8 @@ interface Props {
 export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow;
   const queryClient = useQueryClient();
-  const handleKeyDown = useFormNavigation();
+  const handleKeyDown = useFormNavigation(() => onOpenChange(false))
+  const [searchList, setSearchList] = useState(false);
 
   const form = useForm<any>({
     resolver: zodResolver(z.object({
@@ -79,78 +82,100 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
   };
 
   return (
-    <Dialog
-  open={open}
-  onOpenChange={(state) => {
-    form.reset()
-    onOpenChange(state)
-  }}
->
-  <DialogContent className='sm:max-w-lg'>
-    <DialogHeader className='text-left'>
-      <DialogTitle>
-        {isEdit ? 'Edit Vehicle Type' : 'Add New Vehicle Type'}
-      </DialogTitle>
-    </DialogHeader>
-    <div className='-mr-4 max-h-[80vh] w-full overflow-y-auto py-1 pr-4'>
-      <Form {...form}>
-        <form
-          id="vh-type-form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 p-0.5"
-          onKeyDown={handleKeyDown}
-        >
-          <FormField
-            control={form.control}
-            name='contName'
-            render={({ field }) => (
-              <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
-                <FormLabel className='col-span-2 text-right'>Name</FormLabel>
-                <FormControl className='col-span-4'>
-                  <Input
-                    placeholder='Enter Name'
-                    autoComplete='off'
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className='col-span-4 col-start-3' />
-              </FormItem>
-            )}
-          />
+    <>
+      <Dialog
+        open={open}
+        onOpenChange={(state) => {
+          form.reset()
+          onOpenChange(state)
+        }}
+      >
+        <DialogContent className='sm:max-w-lg'>
+          <DialogHeader className='text-left'>
+            <DialogTitle>
+              {isEdit ? 'Edit Vehicle Type' : 'Add New Vehicle Type'}
+            </DialogTitle>
+          </DialogHeader>
 
-          <FormField
-            control={form.control}
-            name='CStatus'
-            render={({ field }) => (
-              <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
-                <FormLabel className='col-span-2 text-right'>Status</FormLabel>
-                <FormControl className='col-span-4'>
-                  <SelectDropdown
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    placeholder='Select Status'
-                    className='w-full'
-                    items={[
-                      { label: 'Active', value: '0' },
-                      { label: 'In-Active', value: '1' },
-                    ]}
-                  />
-                </FormControl>
-                <FormMessage className='col-span-4 col-start-3' />
-              </FormItem>
-            )}
-          />
+          <div className='-mr-4 max-h-[80vh] w-full overflow-y-auto py-1 pr-4'>
+            <Form {...form}>
+              <form
+                id="vh-type-form"
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4 p-0.5"
+                onKeyDown={handleKeyDown}
+              >
+                {/* Name field */}
+                <FormField
+                  control={form.control}
+                  name='contName'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
+                      <FormLabel className='col-span-2 text-right'>Name</FormLabel>
+                      <FormControl className='col-span-4'>
+                        <Input
+                          placeholder='Enter Name'
+                          autoComplete='off'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className='col-span-4 col-start-3' />
+                    </FormItem>
+                  )}
+                />
 
-          <DialogFooter className="pt-4">
-            <Button type='submit'>
-              {isEdit ? 'Update' : 'Create'}
-            </Button>
-          </DialogFooter>
-        </form>
-      </Form>
-    </div>
-  </DialogContent>
-</Dialog>
+                {/* Status dropdown */}
+                <FormField
+                  control={form.control}
+                  name='CStatus'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-cols-6 items-center gap-x-4 gap-y-1'>
+                      <FormLabel className='col-span-2 text-right'>Status</FormLabel>
+                      <FormControl className='col-span-4'>
+                        <SelectDropdown
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder='Select Status'
+                          className='w-full'
+                          items={[
+                            { label: 'Active', value: '0' },
+                            { label: 'In-Active', value: '1' },
+                          ]}
+                        />
+                      </FormControl>
+                      <FormMessage className='col-span-4 col-start-3' />
+                    </FormItem>
+                  )}
+                />
 
+                {/* Footer */}
+                <DialogFooter className="pt-4">
+                  {isEdit && <Button
+                    type='button'
+                    onClick={() => setSearchList(true)}
+                  >
+                    Search
+                  </Button>}
+                  <Button type='submit'>
+                    {isEdit ? 'Update' : 'Create'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <VehicleTypeDialog
+        open={searchList}
+        onOpenChange={setSearchList}
+        searchValue={form.getValues('contName')}
+        onSelect={(rowData) => {
+          form.setValue('contName', rowData.contName ?? '')
+          form.setValue('CStatus', rowData.CStatus?.toString() ?? '')
+          setSearchList(false);
+        }}
+      />
+    </>
   )
 }

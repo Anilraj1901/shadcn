@@ -15,10 +15,10 @@ function getFocusable(form: HTMLFormElement): HTMLElement[] {
   const external =
     form.id
       ? Array.from(
-          document.querySelectorAll<HTMLElement>(
-            `[form='${form.id}']`
-          )
+        document.querySelectorAll<HTMLElement>(
+          `[form='${form.id}']`
         )
+      )
       : []
 
   // Merge, filter disabled/hidden/inert, de-dup
@@ -61,13 +61,19 @@ function resolveIndex(list: HTMLElement[], node: HTMLElement): number {
   return -1
 }
 
-export const useFormNavigation = () => {
+export const useFormNavigation = (onClose?: () => void) => {
   // Track the last combobox/select trigger we interacted with (helps across portals)
   const lastComboRef = useRef<HTMLElement | null>(null)
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLFormElement>) => {
     const form = e.currentTarget
     const target = e.target as HTMLElement
+    if (e.key === "Escape") {
+      e.preventDefault()
+      e.stopPropagation()
+      if (onClose) onClose()   // call Dialog close handler
+      return
+    }
     const focusable = getFocusable(form)
 
     const tag = (target.tagName || "").toLowerCase()
@@ -90,7 +96,7 @@ export const useFormNavigation = () => {
       // If a closed select/combobox → open it
       if (isComboOrSelect && !isExpanded) {
         e.preventDefault()
-        ;(comboOrSelect as HTMLElement).click()
+          ; (comboOrSelect as HTMLElement).click()
         return
       }
 
@@ -117,7 +123,7 @@ export const useFormNavigation = () => {
         // Optional: Arrow navigation across fields (no wrap)
         console.log("Arrow navigation:", e.key)
         if (["ArrowDown", "ArrowRight"].includes(e.key)) focusable[index + 1]?.focus()
-        if (["ArrowUp", "ArrowLeft"].includes(e.key) ) focusable[index - 1]?.focus()
+        if (["ArrowUp", "ArrowLeft"].includes(e.key)) focusable[index - 1]?.focus()
         return
       }
     }
