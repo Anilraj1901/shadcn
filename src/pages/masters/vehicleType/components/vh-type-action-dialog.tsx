@@ -37,7 +37,7 @@ interface Props {
 export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow;
   const queryClient = useQueryClient();
-  const handleKeyDown = useFormNavigation(() => onOpenChange(false))
+  const handleKeyDown = useFormNavigation()
   const [searchList, setSearchList] = useState(false);
 
   const form = useForm<any>({
@@ -45,16 +45,18 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
       contName: z.string().min(1, 'Name is required.'),
       cstatus: z.string().min(1, 'Status is required.').transform((val) => val.trim())
     })),
-    defaultValues: isEdit
+    defaultValues: currentRow
       ? {
         contName: currentRow?.contName || '',
         cstatus: currentRow?.cstatus?.toString() ?? '',
+        contAakno: currentRow?.contAakno?.toString() ?? ''
       }
       : {
         contName: '',
         cstatus: ''
       },
   })
+  form.setValue('contAakno', currentRow && currentRow?.contAakno?.toString() || '')
 
   const onSubmit = async (values: any) => {
     try {
@@ -63,8 +65,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
       formData.append('cstatus', values.cstatus);
       formData.append('userAakno', '1');
       formData.append('opt', isEdit ? '2' : '1');
-
-      const contAakno = currentRow?.contAakno && Number(currentRow.contAakno);
+      let contAakno = form.getValues('contAakno');
       formData.append('contAakno', contAakno ? contAakno.toString() : '0');
 
       await MasterServices.vehicleTypeSave(formData);
@@ -90,7 +91,17 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
           onOpenChange(state)
         }}
       >
-        <DialogContent className='sm:max-w-lg'>
+        <DialogContent
+          onEscapeKeyDown={(e) => {
+            e.preventDefault() // stop dialog from closing
+            form.reset({
+              contName: '',
+              cstatus: '',
+              contAakno: '',
+            })
+          }}
+          className="sm:max-w-lg"
+        >
           <DialogHeader className='text-left'>
             <DialogTitle>
               {isEdit ? 'Edit Vehicle Type' : 'Add New Vehicle Type'}
@@ -172,6 +183,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
         searchValue={form.getValues('contName')}
         onSelect={(rowData: any) => {
           form.setValue('contName', rowData.contName ?? '')
+          form.setValue('contAakno', rowData.contAakno?.toString() ?? '')
           form.setValue('cstatus', rowData.cstatus?.toString() ?? '')
           setSearchList(false);
         }}

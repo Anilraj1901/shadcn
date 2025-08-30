@@ -61,19 +61,13 @@ function resolveIndex(list: HTMLElement[], node: HTMLElement): number {
   return -1
 }
 
-export const useFormNavigation = (onClose?: () => void) => {
+export const useFormNavigation = () => {
   // Track the last combobox/select trigger we interacted with (helps across portals)
   const lastComboRef = useRef<HTMLElement | null>(null)
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLFormElement>) => {
     const form = e.currentTarget
     const target = e.target as HTMLElement
-    if (e.key === "Escape") {
-      e.preventDefault()
-      e.stopPropagation()
-      if (onClose) onClose()   // call Dialog close handler
-      return
-    }
     const focusable = getFocusable(form)
 
     const tag = (target.tagName || "").toLowerCase()
@@ -118,12 +112,12 @@ export const useFormNavigation = (onClose?: () => void) => {
 
     // Prevent ArrowUp/Down/Space from opening a closed combobox (only Enter should open)
     if (isComboOrSelect && !isExpanded) {
-      if (["ArrowDown", "ArrowRight", "ArrowLeft", "ArrowUp", "Spacebar", " "].includes(e.key)) {
+      if (["ArrowDown", "ArrowUp", "Spacebar", " "].includes(e.key)) {
         e.preventDefault()
         // Optional: Arrow navigation across fields (no wrap)
         console.log("Arrow navigation:", e.key)
-        if (["ArrowDown", "ArrowRight"].includes(e.key)) focusable[index + 1]?.focus()
-        if (["ArrowUp", "ArrowLeft"].includes(e.key)) focusable[index - 1]?.focus()
+        if (["ArrowDown"].includes(e.key)) focusable[index + 1]?.focus()
+        if (["ArrowUp"].includes(e.key)) focusable[index - 1]?.focus()
         return
       }
     }
@@ -133,12 +127,12 @@ export const useFormNavigation = (onClose?: () => void) => {
 
     // Arrow navigation between fields when not on a combobox
     if (!isComboOrSelect) {
-      if (["ArrowDown", "ArrowRight"].includes(e.key)) {
+      if (["ArrowDown"].includes(e.key)) {
         e.preventDefault()
         focusable[index + 1]?.focus()
         return
       }
-      if (["ArrowUp", "ArrowLeft"].includes(e.key)) {
+      if (["ArrowUp"].includes(e.key)) {
         e.preventDefault()
         if (index - 1 >= 0) focusable[index - 1]?.focus()
         return
