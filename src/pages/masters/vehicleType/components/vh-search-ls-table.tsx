@@ -18,19 +18,19 @@ import {
 } from "@/components/ui/select"
 import MasterServices from "../../../../services/master"
 
-interface VehicleTypeDialogProps {
+interface VhSearchLsTableViewProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   searchValue: string
   onSelect: (rowData: any) => void
 }
 
-export function VehicleTypeDialog({
+export function VhSearchLsTableView({
   open,
   onOpenChange,
   searchValue = "",
   onSelect,
-}: VehicleTypeDialogProps) {
+}: VhSearchLsTableViewProps) {
   const [page, setPage] = React.useState(0)
   const [limit, setLimit] = React.useState(10)
   

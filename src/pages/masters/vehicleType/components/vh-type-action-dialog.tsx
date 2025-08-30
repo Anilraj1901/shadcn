@@ -26,7 +26,7 @@ import { SelectDropdown } from '@/components/select-dropdown'
 import MasterServices from "@/services/master";
 import { useFormNavigation } from "@/hooks/useFormNavigation"
 import { useState } from 'react'
-import { VehicleTypeDialog } from './vh-search-ls-table'
+import { VhSearchLsTableView } from './vh-search-ls-table'
 
 interface Props {
   currentRow?: any
@@ -166,7 +166,7 @@ export function VehicleTypeActionDialog({ currentRow, open, onOpenChange }: Prop
         </DialogContent>
       </Dialog>
 
-      <VehicleTypeDialog
+      <VhSearchLsTableView
         open={searchList}
         onOpenChange={setSearchList}
         searchValue={form.getValues('contName')}
