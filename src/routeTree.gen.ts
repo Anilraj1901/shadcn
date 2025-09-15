@@ -38,6 +38,7 @@ import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes
 import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedUserManagmentUserRoleIndexRouteImport } from './routes/_authenticated/user-managment/userRole/index'
 import { Route as AuthenticatedMastersVehicleTypesIndexRouteImport } from './routes/_authenticated/masters/vehicleTypes/index'
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
@@ -190,6 +191,12 @@ const AuthenticatedSettingsAccountRoute =
     path: '/account',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedUserManagmentUserRoleIndexRoute =
+  AuthenticatedUserManagmentUserRoleIndexRouteImport.update({
+    id: '/user-managment/userRole/',
+    path: '/user-managment/userRole/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMastersVehicleTypesIndexRoute =
   AuthenticatedMastersVehicleTypesIndexRouteImport.update({
     id: '/masters/vehicleTypes/',
@@ -226,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/masters/vehicleTypes': typeof AuthenticatedMastersVehicleTypesIndexRoute
+  '/user-managment/userRole': typeof AuthenticatedUserManagmentUserRoleIndexRoute
 }
 export interface FileRoutesByTo {
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
@@ -254,6 +262,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/masters/vehicleTypes': typeof AuthenticatedMastersVehicleTypesIndexRoute
+  '/user-managment/userRole': typeof AuthenticatedUserManagmentUserRoleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -287,6 +296,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/masters/vehicleTypes/': typeof AuthenticatedMastersVehicleTypesIndexRoute
+  '/_authenticated/user-managment/userRole/': typeof AuthenticatedUserManagmentUserRoleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/users'
     | '/masters/vehicleTypes'
+    | '/user-managment/userRole'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/clerk'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/users'
     | '/masters/vehicleTypes'
+    | '/user-managment/userRole'
   id:
     | '__root__'
     | '/_authenticated'
@@ -379,6 +391,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
     | '/_authenticated/masters/vehicleTypes/'
+    | '/_authenticated/user-managment/userRole/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -601,6 +614,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/user-managment/userRole/': {
+      id: '/_authenticated/user-managment/userRole/'
+      path: '/user-managment/userRole'
+      fullPath: '/user-managment/userRole'
+      preLoaderRoute: typeof AuthenticatedUserManagmentUserRoleIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/masters/vehicleTypes/': {
       id: '/_authenticated/masters/vehicleTypes/'
       path: '/masters/vehicleTypes'
@@ -643,6 +663,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
   AuthenticatedMastersVehicleTypesIndexRoute: typeof AuthenticatedMastersVehicleTypesIndexRoute
+  AuthenticatedUserManagmentUserRoleIndexRoute: typeof AuthenticatedUserManagmentUserRoleIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -655,6 +676,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
   AuthenticatedMastersVehicleTypesIndexRoute:
     AuthenticatedMastersVehicleTypesIndexRoute,
+  AuthenticatedUserManagmentUserRoleIndexRoute:
+    AuthenticatedUserManagmentUserRoleIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

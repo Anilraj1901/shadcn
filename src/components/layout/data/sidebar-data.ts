@@ -59,10 +59,26 @@ export const sidebarData: any = {
           icon: IconMessages,
         },
         {
-          title: 'Users',
-          url: '/users',
+          title: 'Users Management',
           icon: IconUsers,
+          items: [
+            {
+              title: 'Users',
+               icon: IconUsers,
+              url: '/users',
+            },
+            {
+              title: 'User Roles',
+              icon: IconUsers,
+              url: '/user-managment/userRole',
+            }
+          ],
         },
+        // {
+        //   title: 'Users',
+        //   url: '/users',
+        //   icon: IconUsers,
+        // },
         {
           title: 'Secured by Clerk',
           icon: ClerkLogo,
