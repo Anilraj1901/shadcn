@@ -40,8 +40,8 @@ export function UserRoleMenuConfigUpdateModal({ open, onOpenChange, currentRow }
 
       onOpenChange(false);
     } catch (error) {
-      console.error('Failed to save User Role:', error);
-      toast.error('Failed to save User Role');
+      console.error('Failed to update Menu Config:', error);
+      toast.error('Failed to update Menu Config');
     }
   };
 
