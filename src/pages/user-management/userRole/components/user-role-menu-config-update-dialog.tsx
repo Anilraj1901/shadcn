@@ -2,39 +2,40 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { sidebarData } from "../../../../../src/components/layout/data/sidebar-data"
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import UserManagmentService from "@/services/user-management";
 import { toast } from 'sonner'
+import { useQueryClient } from '@tanstack/react-query'
 
-
-
-let menuItems = sidebarData.navGroups.find((x: any) => x.title == 'General')?.items || [];
 
 export function UserRoleMenuConfigUpdateModal({ open, onOpenChange, currentRow }: any) {
+  let menuItems = sidebarData.navGroups.find((x: any) => x.title == 'General')?.items || [];
+  const queryClient = useQueryClient();
 
-  if (currentRow?.pageDetails && currentRow?.pageDetails.length) {
-    menuItems = menuItems.map((x: any) => {
-      return currentRow?.pageDetails.find((y: any) => y.title == x.title) || x
-    })
+  if (currentRow?.pageDetails) {
+    currentRow.pageDetails = typeof (currentRow?.pageDetails) == 'string' ? JSON.parse(currentRow?.pageDetails) : currentRow?.pageDetails;
+    if (currentRow.pageDetails.length) {
+      menuItems = menuItems.map((x: any) => {
+        return currentRow?.pageDetails.find((y: any) => y.title == x.title) || x
+      })
+    }
   }
+
   const [tableData, setTableData] = useState(menuItems);
 
-  useEffect(() => {
-    console.log(tableData)
-  }, [tableData])
-
-
-  const onSubmit = async (values: any) => {
+  const onSubmit = async () => {
     try {
       const formData = new FormData();
-      formData.append('roleName', values.roleName);
-      formData.append('cstatus', values.cstatus);
+      formData.append('roleName', currentRow.roleName);
+      formData.append('cstatus', currentRow.cstatus);
       formData.append('userAakno', '1');
       formData.append('opt', '2');
       formData.append('roleAakno', currentRow?.roleAakno ? currentRow.roleAakno.toString() : '0');
       formData.append('pageDetails', JSON.stringify(tableData));
 
       await UserManagmentService.userRoleSave(formData);
+
+      queryClient.invalidateQueries({ queryKey: ['userRoleList'] });
 
       toast.success('Menu Config Updated Successfully!!!');
 
@@ -53,7 +54,7 @@ export function UserRoleMenuConfigUpdateModal({ open, onOpenChange, currentRow }
       >
         <DialogHeader className="p-0 mb-2">
           <DialogTitle className="text-lg font-semibold">
-            Menu Configuration
+            {`Menu Configuration - ${currentRow?.roleName}`}
           </DialogTitle>
           <DialogDescription />
         </DialogHeader>
