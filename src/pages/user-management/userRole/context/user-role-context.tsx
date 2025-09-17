@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import useDialogState from '@/hooks/use-dialog-state'
 
-type UserRoleDialogType = 'add' | 'edit' | 'delete'
+type UserRoleDialogType = 'add' | 'edit' | 'delete' | 'menuConfigUpdate'
 
 interface UserRoleContextType {
   open: UserRoleDialogType | null

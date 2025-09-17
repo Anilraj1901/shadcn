@@ -64,13 +64,16 @@ export const sidebarData: any = {
           items: [
             {
               title: 'Users',
-               icon: IconUsers,
+              icon: IconUsers,
               url: '/users',
             },
             {
               title: 'User Roles',
               icon: IconUsers,
               url: '/user-managment/userRole',
+              subItems: [{
+                name: 'Menu Config Update'
+              }]
             }
           ],
         },
@@ -103,7 +106,7 @@ export const sidebarData: any = {
           items: [
             {
               title: 'Vehicle Type',
-               icon: IconTruck,
+              icon: IconTruck,
               url: '/masters/vehicleTypes',
             },
             {
