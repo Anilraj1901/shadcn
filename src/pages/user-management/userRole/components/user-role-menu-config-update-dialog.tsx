@@ -67,25 +67,47 @@ export function UserRoleMenuConfigUpdateModal({ open, onOpenChange, currentRow }
                 <th className="border px-5 py-2 text-left">Sub Master</th>
                 <th className="border px-5 py-2 text-center">
                   <label className="inline-flex items-center gap-2 justify-center">
-                    <Checkbox className="border-2 border-gray-400" />
                     <span>Sub Items</span>
                   </label>
                 </th>
                 <th className="border px-5 py-2 text-center">
                   <label className="inline-flex items-center gap-2 justify-center">
-                    <Checkbox className="border-2 border-gray-400" />
+                    <Checkbox className="border-2 border-gray-400"
+                      onCheckedChange={(checked) => {
+                        const newData = [...tableData];
+                        setTableData(checkAllFields('view', newData, checked));
+                      }}
+                    />
                     <span>View</span>
                   </label>
                 </th>
                 <th className="border px-5 py-2 text-center">
                   <label className="inline-flex items-center gap-2 justify-center">
-                    <Checkbox className="border-2 border-gray-400" />
+                    <Checkbox className="border-2 border-gray-400"
+                      onCheckedChange={(checked) => {
+                        const newData = [...tableData];
+                        setTableData(checkAllFields('create', newData, checked));
+                      }} />
+                    <span>Create</span>
+                  </label>
+                </th>
+                <th className="border px-5 py-2 text-center">
+                  <label className="inline-flex items-center gap-2 justify-center">
+                    <Checkbox className="border-2 border-gray-400"
+                      onCheckedChange={(checked) => {
+                        const newData = [...tableData];
+                        setTableData(checkAllFields('edit', newData, checked));
+                      }} />
                     <span>Edit</span>
                   </label>
                 </th>
                 <th className="border px-5 py-2 text-center">
                   <label className="inline-flex items-center gap-2 justify-center">
-                    <Checkbox className="border-2 border-gray-400" />
+                    <Checkbox className="border-2 border-gray-400"
+                      onCheckedChange={(checked) => {
+                        const newData = [...tableData];
+                          setTableData(checkAllFields('delete', newData, checked));
+                      }} />
                     <span>Delete</span>
                   </label>
                 </th>
@@ -123,6 +145,17 @@ function tableBodySetup(data: any, setData: any) {
               onCheckedChange={(checked) => {
                 const newData = [...data]
                 newData[masterIndex].actions = { ...newData[masterIndex].actions, view: !!checked }
+                setData(newData)
+              }}
+            />
+          </td>
+          <td className="px-4 py-2 border text-center">
+            <Checkbox
+              className="border-2 border-gray-400"
+              checked={master?.actions?.create || false}
+              onCheckedChange={(checked) => {
+                const newData = [...data]
+                newData[masterIndex].actions = { ...newData[masterIndex].actions, create: !!checked }
                 setData(newData)
               }}
             />
@@ -210,6 +243,17 @@ function tableBodySetup(data: any, setData: any) {
               <td className="px-4 py-2 border text-center">
                 <Checkbox
                   className="border-2 border-gray-400"
+                  checked={sub?.actions?.create || false}
+                  onCheckedChange={(checked) => {
+                    const newData = [...data]
+                    newData[masterIndex].items[subIndex].actions = { ...newData[masterIndex].items[subIndex].actions, create: !!checked }
+                    setData(newData)
+                  }}
+                />
+              </td>
+              <td className="px-4 py-2 border text-center">
+                <Checkbox
+                  className="border-2 border-gray-400"
                   checked={sub?.actions?.edit || false}
                   onCheckedChange={(checked) => {
                     const newData = [...data]
@@ -246,4 +290,18 @@ function countTotalRows(master: any) {
     total += sub.subItems ? sub.subItems.length : 1
   })
   return total
+}
+
+function checkAllFields(key: any, newData: any, checked: any) {
+  for (const data of newData) {
+    data.actions = data.actions || {};
+    data.actions[key] = !!checked;
+    if (data?.items) {
+      for (const item of data?.items) {
+        item.actions = item.actions || {};
+        item.actions[key] = !!checked;
+      }
+    }
+  }
+  return newData;
 }
