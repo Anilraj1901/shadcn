@@ -15,7 +15,6 @@ import {
   RowData,
   SortingState,
   VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -24,18 +23,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { DataTablePagination } from '../../../components/table/data-table-pagination';
 import { DataTableToolbar } from './components/data-table-filters';
-import { Loader2 } from "lucide-react"
-
+import { DataTableView } from '@/components/table/data-table-display'
 
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -59,7 +49,7 @@ export default function UserRoles() {
 
       if (filter) queryParams += `&filter=${filter}`;
 
-      return await UserManagmentServices.userRoleList (queryParams);
+      return await UserManagmentServices.userRoleList(queryParams);
     },
   });
 
@@ -142,51 +132,7 @@ export function UserRolesTable({ columns, data, totalRecords, setLimit, setPage,
   return (
     <div className="space-y-4 relative">
       <div className="overflow-hidden rounded-md border relative">
-
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-32 text-center">
-                  <div className="flex flex-col items-center justify-center space-y-2">
-                    {/* Animated spinning loader */}
-                    <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-                    <span className="text-sm text-gray-500">Loading User Roles...</span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : data?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <DataTableView columns={columns} data={data} table={table} isLoading={isLoading} />
       </div>
 
       <DataTablePagination

@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { useNavigate } from '@tanstack/react-router'
 import {
   Form,
   FormControl,
@@ -15,13 +16,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { toast } from 'sonner'
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
 
 const formSchema = z.object({
-  email: z.email({
-    error: (iss) => (iss.input === '' ? 'Please enter your email' : undefined),
-  }),
+  userName: z.string().min(1, 'Username is required.'),
   password: z
     .string()
     .min(1, 'Please enter your password')
@@ -30,11 +30,11 @@ const formSchema = z.object({
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
-
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      userName: '',
       password: '',
     },
   })
@@ -44,9 +44,23 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     // eslint-disable-next-line no-console
     console.log(data)
 
+
+    if (data.userName != 'vehicleDevice') {
+      setIsLoading(false)
+      return toast.error('User Name does not exist')
+    } else if (data.password != '12345678'){
+      setIsLoading(false)
+      return toast.error('Password is wrong')
+    }
+
+    localStorage.setItem("token", 't4746yd47tryhty47647ydtyhety467tehfkjh746746dthe');
+
+    toast.success('login successfully')
+
     setTimeout(() => {
       setIsLoading(false)
-    }, 3000)
+      navigate({ to: '/' })
+    }, 2000)
   }
 
   return (
@@ -58,12 +72,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       >
         <FormField
           control={form.control}
-          name='email'
+          name='userName'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>User Name</FormLabel>
               <FormControl>
-                <Input placeholder='name@example.com' {...field} />
+                <Input placeholder='Enter Username' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
