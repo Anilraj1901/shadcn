@@ -13,41 +13,59 @@ const callTypes = new Map<number, string>([
 
 export const columns: ColumnDef<any>[] = [
   {
-    accessorKey: 'roleAakno',
+    accessorKey: 'userAakno',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='ID' />
     ),
     cell: ({ row }) => (
-      <LongText className='max-w-36'>{row.getValue('roleAakno')}</LongText>
+      <LongText className='max-w-36'>{row.getValue('userAakno')}</LongText>
     ),
     enableHiding: false,
   },
   {
+    accessorKey: 'userId',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='User Name' />
+    ),
+    cell: ({ row }) => (
+      <div className='w-fit text-nowrap'>{row.getValue('userId')}</div>
+    ),
+  },
+  {
     accessorKey: 'roleName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Name' />
+      <DataTableColumnHeader column={column} title='Role' />
     ),
     cell: ({ row }) => (
       <div className='w-fit text-nowrap'>{row.getValue('roleName')}</div>
     ),
   },
   {
-    accessorKey: 'cstatus',
+    accessorKey: 'lckTag',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Status' />
     ),
     cell: ({ row }) => {
-      const badgeColor = callTypes.get(row?.original?.cstatus)
+      const badgeColor = callTypes.get(row?.original?.lckTag)
       return (
         <div className='flex space-x-2'>
           <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('cstatus') == '0' ? 'Active' : 'In-Active'}
+            {row.getValue('lckTag') == '0' ? 'Active' : 'In-Active'}
           </Badge>
         </div>
       )
     },
     enableHiding: false,
     enableSorting: false,
+  },
+  {
+    accessorKey: 'branchName',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Branch' />
+    ),
+    cell: ({ row }) => (
+      <div className='w-fit text-nowrap'>{row.getValue('branchName')}</div>
+    ),
   },
   {
     accessorKey: 'createdDate',

@@ -15,7 +15,7 @@ interface Props {
   currentRow: any
 }
 
-export function UserRoleDeleteDialog({ open, onOpenChange, currentRow }: Props) {
+export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
   // const [value, setValue] = useState('')
 
   const handleDelete = async () => {

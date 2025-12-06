@@ -20,7 +20,7 @@ import {
   IconTruck,
   IconUsers,
   IconShieldCog,
-  IconBuildingFactory
+  IconBuildingFactory,
 } from '@tabler/icons-react'
 import { Command } from 'lucide-react'
 import { ClerkLogo } from '@/assets/clerk-logo'
@@ -59,13 +59,13 @@ export const sidebarData: any = {
           icon: IconMessages,
         },
         {
-          title: 'Users Management',
+          title: 'User Management',
           icon: IconUsers,
           items: [
             {
               title: 'Users',
-              icon: IconUsers,
-              url: '/users',
+              icon: IconUserCog,
+              url: '/user-managment/user',
             },
             {
               title: 'User Roles',

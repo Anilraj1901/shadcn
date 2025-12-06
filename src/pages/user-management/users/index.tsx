@@ -4,9 +4,9 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { columns } from './components/users-columns'
-import { UserRoleDialogs } from './components/users-dialogs'
+import { UserDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
-import UserRolesProvider from './context/users-context'
+import UsersProvider from './context/users-context'
 import { useQuery } from "@tanstack/react-query";
 import UserManagmentServices from "@/services/user-management";
 import { useState } from 'react'
@@ -45,26 +45,26 @@ declare module '@tanstack/react-table' {
 }
 
 
-export default function UserRoles() {
+export default function Users() {
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState("");
   // install with: npm i use-debounce
 
 
-  const userRoleList = useQuery({
-    queryKey: ["userRoleList", page, limit, filter],
+  const userList = useQuery({
+    queryKey: ["userList", page, limit, filter],
     queryFn: async () => {
       let queryParams = `sEcho=5&iColumns=2&sColumns=%2C&mDataProp_0=contAakno&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=contName&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=asc&iSortingCols=1&_=1755523196428&iDisplayLength=${limit}&iDisplayStart=${page * limit}`;
 
       if (filter) queryParams += `&filter=${filter}`;
 
-      return await UserManagmentServices.userRoleList (queryParams);
+      return await UserManagmentServices.userList (queryParams);
     },
   });
 
   return (
-    <UserRolesProvider>
+    <UsersProvider>
       <Header fixed>
         <Search />
         <div className="ml-auto flex items-center space-x-4">
@@ -76,7 +76,7 @@ export default function UserRoles() {
       <Main>
         {/* Header Row */}
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight">User Roles</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Users</h2>
           <UsersPrimaryButtons />
         </div>
 
@@ -87,9 +87,9 @@ export default function UserRoles() {
 
         {/* Table Section */}
         <div className="flex-1 overflow-auto px-4 py-2">
-          <UserRolesTable
-            data={userRoleList?.data?.data?.aaData || []}
-            totalRecords={Number(userRoleList?.data?.data?.iTotalRecords) || 0}
+          <UsersTable
+            data={userList?.data?.data?.aaData || []}
+            totalRecords={Number(userList?.data?.data?.iTotalRecords) || 0}
             columns={columns}
             setLimit={setLimit}
             setPage={setPage}
@@ -97,18 +97,18 @@ export default function UserRoles() {
             limit={limit}
             setFilter={setFilter}
             filter={filter}
-            isLoading={userRoleList.isLoading}
+            isLoading={userList.isLoading}
           />
         </div>
       </Main>
-      <UserRoleDialogs />
-    </UserRolesProvider>
+      <UserDialogs />
+    </UsersProvider>
   )
 }
 
 
 
-export function UserRolesTable({ columns, data, totalRecords, setLimit, setPage, page, limit, isLoading }: any) {
+export function UsersTable({ columns, data, totalRecords, setLimit, setPage, page, limit, isLoading }: any) {
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])

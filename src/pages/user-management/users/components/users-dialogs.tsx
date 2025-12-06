@@ -1,14 +1,14 @@
 import { useUsers } from '../context/users-context'
-import { UserRoleActionDialog } from './users-action-dialog'
-import { UserRoleDeleteDialog } from './users-delete-dialog'
+import { UserActionDialog } from './users-action-dialog'
+import { UserDeleteDialog } from './users-delete-dialog'
 
-export function UserRoleDialogs() {
+export function UserDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useUsers()
 
   return (
     <>
-      <UserRoleActionDialog
-        key='user-role-add'
+      <UserActionDialog
+        key='user-add'
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
       />
@@ -16,8 +16,8 @@ export function UserRoleDialogs() {
 
       {currentRow && (
         <>
-          <UserRoleActionDialog
-            key={`user-role-edit-${currentRow.id}`}
+          <UserActionDialog
+            key={`user-edit-${currentRow.id}`}
             open={open === 'edit'}
             onOpenChange={() => {
               setOpen('edit')
@@ -26,8 +26,8 @@ export function UserRoleDialogs() {
             currentRow={currentRow}
           />
 
-          <UserRoleDeleteDialog
-            key={`user-role-delete-${currentRow.id}`}
+          <UserDeleteDialog
+            key={`user-delete-${currentRow.id}`}
             open={open === 'delete'}
             onOpenChange={() => {
               setOpen('delete')
