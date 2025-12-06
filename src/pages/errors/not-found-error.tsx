@@ -1,25 +1,29 @@
-import { useNavigate, useRouter } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import ErrorBoundary from "@/components/lottie/errorboundary";
+import { useRouter } from "@tanstack/react-router";
+import Error from "@/assets/lottiefiles/notFound.json";
 
-export default function NotFoundError() {
-  const navigate = useNavigate()
-  const { history } = useRouter()
+function NotFoundPage() {
+  const error: any = useRouter();
+  console.log("error from router", error);
+
   return (
-    <div className='h-svh'>
-      <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
-        <h1 className='text-[7rem] leading-tight font-bold'>404</h1>
-        <span className='font-medium'>Oops! Page Not Found!</span>
-        <p className='text-muted-foreground text-center'>
-          It seems like the page you're looking for <br />
-          does not exist or might have been removed.
-        </p>
-        <div className='mt-6 flex gap-4'>
-          <Button variant='outline' onClick={() => history.go(-1)}>
-            Go Back
-          </Button>
-          <Button onClick={() => navigate({ to: '/' })}>Back to Home</Button>
+    <div>
+     <main className="flex flex-col items-center justify-center m-10 text-center">
+        <div>
+          <h1 className="text-6xl font-bold mb-4">Oops!</h1>
+          <p className="text-xl mb-2">
+            The page you’re looking for was not found or you don’t have access to it.
+          </p>
+          <p className="text-md text-gray-600">
+            Please contact your administrator or the development team for assistance.
+          </p>
         </div>
-      </div>
+      </main>
+
+      <ErrorBoundary icon={Error} style={{ height: "70vh", width: "100vw" }} />
     </div>
-  )
+  );
 }
+
+export default NotFoundPage;
